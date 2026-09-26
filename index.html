@@ -1,1 +1,230 @@
 
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Nail Salon Life - Tiệm Nail Của Lan</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#fff0f6;color:#75465c;font-family:system-ui,-apple-system,sans-serif}
+button{border:0;cursor:pointer;font:inherit;font-weight:700;border-radius:14px;padding:12px;background:#ef9fbe;color:white}
+button:active{transform:scale(.97)}
+header{background:#fff9fc;padding:18px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 12px #c778981c;position:sticky;top:0;z-index:5}
+h1{font-size:20px;margin:0}
+h2{font-size:18px;margin:0 0 10px}
+small{color:#b87d98}
+.wrap{max-width:850px;margin:auto;padding:14px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.stat,.panel{background:white;border:1px solid #f5d5e2;border-radius:18px;padding:14px;box-shadow:0 3px 12px #a45c7a0b}
+.stat{text-align:center;font-size:12px}
+.stat b{display:block;font-size:17px;margin-top:5px}
+.room{height:270px;border:5px solid white;border-radius:22px;position:relative;overflow:hidden;background:linear-gradient(#ffe1ed 0 67%,#d5b09d 67%)}
+.window{position:absolute;top:20px;left:20px;width:85px;height:90px;border:7px solid white;background:#bde9f4;border-radius:12px;text-align:center;font-size:35px}
+.plant{position:absolute;right:20px;top:20px;font-size:42px}
+.sign{position:absolute;top:35px;left:50%;transform:translateX(-50%);background:#fff9fc;border:2px solid #f4c5d9;border-radius:12px;padding:12px;font-weight:900;white-space:nowrap}
+.furniture{position:absolute;bottom:22px;left:0;right:0;display:flex;justify-content:space-around;align-items:end;font-size:40px;text-align:center}
+.furniture span{display:block;font-size:11px;background:#fff9f2bb;border-radius:8px;padding:4px}
+.actions{display:flex;gap:8px;margin-top:12px}
+.actions button{flex:1}
+nav{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+nav button{background:white;color:#a65d7e;border:1px solid #f4d0df;padding:12px 3px;font-size:13px}
+nav button.active{background:#e995b6;color:white}
+.hidden{display:none!important}
+.customer{display:flex;align-items:center;gap:12px}
+.face{font-size:48px}
+.colors{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0}
+.swatch{width:38px;height:38px;border-radius:50%;border:3px solid white;box-shadow:0 0 0 1px #e6b6cb;padding:0}
+.hand{background:#fff0e6;border-radius:16px;padding:18px 5px;display:flex;justify-content:center;gap:6px;margin:12px 0}
+.nail{height:62px;width:34px;border-radius:50% 50% 40% 40%;border:2px solid #e4b6a6;background:#ffdfd1;box-shadow:inset 0 4px 5px #fff; padding:0}
+.nail.selected{outline:3px solid #b57ed0;outline-offset:2px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:10px 0}
+.item{border-bottom:1px solid #f6e0e9;padding:12px 0}
+footer{text-align:center;font-size:12px;padding:20px;color:#bc8ba0}
+input{border:1px solid #efc4d6;border-radius:10px;padding:10px;width:100%;font:inherit}
+@media(max-width:450px){.wrap{padding:10px}.room{height:245px}.nail{width:29px;height:55px}.hand{gap:5px;padding:16px 2px}.stat{padding:10px 3px}}
+</style>
+</head>
+<body>
+<header>
+<div><h1>🌷 Tiệm Nail Của Lan</h1><small>My Little Nail Salon</small></div>
+<button onclick="toggleMusic()" style="padding:10px">♫</button>
+</header>
+<main class="wrap">
+<div class="stats">
+<div class="stat">💰 Tiền<b id="cash">500.000đ</b></div>
+<div class="stat">⭐ Uy tín<b id="rep">0</b></div>
+<div class="stat">💅 Cấp độ<b id="level">1</b></div>
+</div>
+
+<section class="panel">
+<div class="row"><div><h2>🏡 Salon của Lan</h2><small>Ngày <span id="day">1</span> · Chủ tiệm Lan</small></div><span id="weather">☀️</span></div>
+<div class="room">
+<div class="window">🌤️</div><div class="plant">🪴</div>
+<div class="sign">Lan's Nail Studio</div>
+<div class="furniture">
+<div>🪑<span>Ghế khách</span></div>
+<div>💅<span>Bàn nail</span></div>
+<div>🛋️<span>Ghế chờ</span></div>
+</div>
+<div id="decor" style="position:absolute;bottom:80px;right:10px;font-size:30px"></div>
+</div>
+<div class="actions">
+<button onclick="callCustomer()">🔔 Gọi khách</button>
+<button onclick="endDay()" style="background:#d8a6c5">🌙 Hết ngày</button>
+</div>
+</section>
+
+<section id="customer" class="panel hidden" style="margin-top:14px">
+<div class="customer">
+<div class="face" id="face">👩🏻</div>
+<div><h2 id="cname">Khách hàng</h2><small id="request">Muốn làm móng xinh</small><div><b id="budget">100.000đ</b></div></div>
+</div>
+<h2 style="margin-top:18px">🎨 Chọn màu sơn</h2>
+<div class="colors" id="colors"></div>
+<small>Chạm từng móng để chọn, sau đó chạm màu sơn.</small>
+<div class="hand" id="hand"></div>
+<div id="hint" style="text-align:center;font-size:12px">Chọn móng để bắt đầu</div>
+<div class="actions">
+<button onclick="resetNails()" style="background:#d7a5c1">↺ Làm lại</button>
+<button onclick="finish()" >✨ Hoàn thành</button>
+</div>
+</section>
+
+<nav id="nav">
+<button class="active" onclick="tab('shop',this)">🛍️<br>Cửa hàng</button>
+<button onclick="tab('decor',this)">🪴<br>Trang trí</button>
+<button onclick="tab('finance',this)">💰<br>Tài chính</button>
+<button onclick="tab('reviews',this)">💌<br>Đánh giá</button>
+<button onclick="tab('inventory',this)">📦<br>Kho đồ</button>
+<button onclick="tab('quests',this)">🎯<br>Nhiệm vụ</button>
+</nav>
+<section class="panel" id="content"></section>
+<footer>🌷 Chăm chút từng bộ móng, xây dựng tiệm nail trong mơ 🌷</footer>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+const colors=['#f28cae','#f7b6ce','#d85d89','#b58bd3','#9e8de0','#f7c96a','#f48b80','#d9a7a0','#a9c6a0','#ffffff','#c34f76','#a6dbe0','#ff6f91','#b87333','#d4af37'];
+let state;
+try{state=JSON.parse(localStorage.getItem('lanNailSave'))}catch(e){}
+if(!state)state={cash:500000,rep:0,served:0,day:1,stock:20,level:1,decor:0,reviews:[],history:[],decorItems:[]};
+let current=null,selected=0,paint=[],paintColor=colors[0],music=false,audio=null;
+function save(){localStorage.setItem('lanNailSave',JSON.stringify(state));update()}
+function money(n){return Math.round(n).toLocaleString('vi-VN')+'đ'}
+function update(){
+$('cash').textContent=money(state.cash);
+$('rep').textContent=state.rep;
+$('day').textContent=state.day;
+$('level').textContent=state.level;
+$('decor').textContent=state.decorItems.join(' ');
+}
+function notify(t){alert(t)}
+function callCustomer(){
+if(current){notify('Hãy hoàn thành khách hiện tại trước nhé!');return}
+if(state.stock<=0){notify('Hết sơn rồi! Vào cửa hàng nhập thêm nhé.');return}
+let people=[['👩🏻','Linh','Sơn gel hồng nhẹ nhàng',120000],['👩🏽','Mai','Móng pastel đáng yêu',150000],['👩🏼','Hà','Nail art hoa xinh xắn',180000],['👩🏿','An','Móng nude thanh lịch',100000],['👩🏻‍🦰','Vy','Móng đỏ nổi bật',160000]];
+let p=people[Math.floor(Math.random()*people.length)];
+current={name:p[1],face:p[0],request:p[2],budget:p[3]};
+paint=Array(10).fill(null);selected=0;
+$('face').textContent=current.face;
+$('cname').textContent=current.name;
+$('request').textContent=current.request;
+$('budget').textContent=money(current.budget);
+$('customer').classList.remove('hidden');
+renderHand();renderColors();
+$('customer').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function renderColors(){
+$('colors').innerHTML='';
+colors.forEach(c=>{
+let b=document.createElement('button');
+b.className='swatch';b.style.background=c;
+b.onclick=()=>{paintColor=c;paint[selected]=c;renderHand()};
+$('colors').appendChild(b);
+});
+}
+function renderHand(){
+$('hand').innerHTML='';
+for(let i=0;i<10;i++){
+let b=document.createElement('button');
+b.className='nail'+(selected===i?' selected':'');
+b.style.background=paint[i]||'#ffdfd1';
+b.setAttribute('aria-label','Móng '+(i+1));
+b.onclick=()=>{selected=i;renderHand()};
+$('hand').appendChild(b);
+}
+$('hint').textContent='Đang chọn móng '+(selected+1)+' / 10';
+}
+function resetNails(){paint=Array(10).fill(null);renderHand()}
+function finish(){
+if(!current)return;
+let done=paint.filter(Boolean).length;
+if(done<10){notify('Tỷ tỷ sơn đủ 10 móng rồi hãy hoàn thành nhé!');return}
+if(state.stock<10){notify('Không đủ vật liệu!');return}
+state.stock-=10;
+let quality=paint.every(Boolean)?100:0;
+let pay=current.budget;
+state.cash+=pay;state.rep+=2;state.served++;
+state.reviews.unshift({name:current.name,stars:5,text:'Bộ móng xinh xắn, rất hài lòng!'});
+state.history.push({day:state.day,type:'Doanh thu',amount:pay});
+if(state.served%5===0)state.level++;
+current=null;
+$('customer').classList.add('hidden');
+save();
+notify('Khách rất hài lòng! +'+money(pay)+' doanh thu 💖');
+}
+function endDay(){
+if(current){notify('Hãy phục vụ khách hiện tại trước nhé!');return}
+let rent=30000;
+state.cash-=rent;
+state.history.push({day:state.day,type:'Tiền thuê mặt bằng',amount:-rent});
+state.day++;
+save();
+notify('Kết thúc ngày! Đã trừ '+money(rent)+' tiền thuê mặt bằng.');
+}
+function tab(name,btn){
+document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('active'));
+btn.classList.add('active');
+let c=$('content');
+if(name==='shop'){
+c.innerHTML='<h2>🛍️ Cửa hàng vật liệu</h2><div class="item"><div class="row"><div><b>Bộ sơn gel xinh xắn</b><br><small>+10 lượt sơn</small></div><button onclick="buyStock()">50.000đ</button></div></div><div class="item"><div class="row"><div><b>Bộ sơn cao cấp</b><br><small>+30 lượt sơn</small></div><button onclick="buyPremium()">120.000đ</button></div></div>';
+}
+if(name==='decor'){
+c.innerHTML='<h2>🪴 Trang trí salon</h2><div class="item"><div class="row"><div><b>🌷 Bình hoa pastel</b><br><small>Trang trí bàn nail</small></div><button onclick="buyDecor(0)">30.000đ</button></div></div><div class="item"><div class="row"><div><b>💡 Đèn bàn xinh</b><br><small>Góc làm móng lung linh</small></div><button onclick="buyDecor(1)">80.000đ</button></div></div><div class="item"><div class="row"><div><b>🛋️ Ghế chờ cao cấp</b><br><small>Nâng cấp salon</small></div><button onclick="buyDecor(2)">150.000đ</button></div></div>';
+}
+if(name==='finance'){
+let revenue=state.history.filter(x=>x.type==='Doanh thu').reduce((a,b)=>a+b.amount,0);
+let expense=state.history.filter(x=>x.amount<0).reduce((a,b)=>a-b.amount,0);
+c.innerHTML='<h2>💰 Sổ tài chính</h2><div class="item">Tổng doanh thu: <b>'+money(revenue)+'</b></div><div class="item">Tổng chi phí: <b>'+money(expense)+'</b></div><div class="item">Tiền hiện có: <b>'+money(state.cash)+'</b></div><h3>Lịch sử</h3>'+state.history.slice(-10).reverse().map(x=>'<div class="item">Ngày '+x.day+' · '+x.type+' · '+money(x.amount)+'</div>').join('');
+}
+if(name==='reviews'){
+c.innerHTML='<h2>💌 Đánh giá khách hàng</h2>'+(state.reviews.length?state.reviews.map(r=>'<div class="item"><b>'+r.name+'</b> · ⭐⭐⭐⭐⭐<p>'+r.text+'</p></div>').join(''):'Chưa có đánh giá. Phục vụ khách để nhận đánh giá nhé!');
+}
+if(name==='inventory'){
+c.innerHTML='<h2>📦 Kho vật liệu</h2><div class="item">Sơn gel: <b>'+state.stock+' lượt</b></div><div class="item">Đã phục vụ: <b>'+state.served+' khách</b></div><div class="item">Cấp độ salon: <b>'+state.level+'</b></div>';
+}
+if(name==='quests'){
+c.innerHTML='<h2>🎯 Nhiệm vụ</h2><div class="item">💅 Phục vụ 1 khách · '+Math.min(state.served,1)+' / 1 '+(state.served>=1?'✅':'')+'</div><div class="item">⭐ Đạt 5 uy tín · '+Math.min(state.rep,5)+' / 5 '+(state.rep>=5?'✅':'')+'</div><div class="item">🌷 Đạt cấp độ 2 · '+state.level+' / 2 '+(state.level>=2?'✅':'')+'</div>';
+}
+}
+function buyStock(){if(state.cash<50000)return notify('Không đủ tiền!');state.cash-=50000;state.stock+=10;save();notify('Đã mua 10 lượt sơn!')}
+function buyPremium(){if(state.cash<120000)return notify('Không đủ tiền!');state.cash-=120000;state.stock+=30;save();notify('Đã mua bộ sơn cao cấp!')}
+function buyDecor(i){
+let items=[['🌷',30000],['💡',80000],['🛋️',150000]];
+let item=items[i];if(state.cash<item[1])return notify('Không đủ tiền!');
+state.cash-=item[1];state.decorItems.push(item[0]);save();notify('Đã trang trí salon!');tab('decor',document.querySelectorAll('#nav button')[1]);
+}
+function toggleMusic(){
+music=!music;
+if(music){
+try{audio=new(window.AudioContext||window.webkitAudioContext)();let osc=audio.createOscillator();let gain=audio.createGain();osc.type='sine';osc.frequency.value=261.63;gain.gain.value=.015;osc.connect(gain);gain.connect(audio.destination);osc.start();$('weather').textContent='🎵';}
+catch(e){notify('Trình duyệt không hỗ trợ âm thanh')}
+}else{if(audio){audio.close();audio=null}$('weather').textContent='☀️'}
+}
+update();
+tab('shop',document.querySelector('#nav button'));
+</script>
+</body>
+</html>
+
